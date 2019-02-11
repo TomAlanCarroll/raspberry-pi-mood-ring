@@ -1,4 +1,5 @@
 # Actual local config
+config.py
 config.properties
 
 # Byte-compiled / optimized / DLL files

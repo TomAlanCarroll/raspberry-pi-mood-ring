@@ -1,8 +1,8 @@
-import os
 import http.client
 import json
 import time
 
+from config import AZURE_SUBSCRIPTION_KEY, REGION
 from urllib.parse import urlencode
 from colors import face_emotions_to_color, mood_ring_colors
 from color_changer import color_changer
@@ -11,18 +11,14 @@ from pprint import pprint
 
 UPDATE_INTERVAL = 8  # Update every 8 seconds
 
-# Replace the subscription_key string value with your valid subscription key.
-subscription_key = os.environ['AZURE_SUBSCRIPTION_KEY']
-region = os.environ['REGION']
+if AZURE_SUBSCRIPTION_KEY == 'Add your key here':
+    raise Exception('Add your Azure key to config.py. See README.md')
 
-if subscription_key == 'Add your key here':
-    raise Exception('Add your Azure key to config.properties. See README.md')
-
-azure_api_base_uri = region + '.api.cognitive.microsoft.com'
+azure_api_base_uri = REGION + '.api.cognitive.microsoft.com'
 # Request headers
 headers = {
     'Content-Type': 'application/octet-stream',
-    'Ocp-Apim-Subscription-Key': subscription_key,
+    'Ocp-Apim-Subscription-Key': AZURE_SUBSCRIPTION_KEY,
 }
 # Request parameters
 params = urlencode({
@@ -45,15 +41,17 @@ while True:
 
         if not parsed_response:
             print('Picture could not be detected.')
-        else:
+        elif len(parsed_response) > 0:
             print('Response:')
-            pprint(parsed_response['faceAttributes']['emotion'])
-            emotions = parsed_response['faceAttributes']['emotion']
+            pprint(parsed_response[0]['faceAttributes']['emotion'])
+            emotions = parsed_response[0]['faceAttributes']['emotion']
             emotion_color_name = face_emotions_to_color(emotions)
             if emotion_color_name is not None:
                 color_changer.change(name=emotion_color_name, hex=mood_ring_colors[emotion_color_name])
             else:
                 color_changer.turn_off()
+        else:
+            color_changer.turn_off()
         conn.close()
     time.sleep(UPDATE_INTERVAL)
     i += 1
