@@ -8,32 +8,42 @@ from colors import *
 
 class ColorChanger(ABC):
     @abstractmethod
-    def change(self, color):
+    def change(self, name, hex):
         pass
 
-    def print_color(self, color):
-        if color not in mood_ring_colors:
-            raise Exception('Unsupported color: ' + color)
+    @abstractmethod
+    def turn_off(self):
+        pass
 
-        if color in termcolor_colors:
-            if color == 'purple':
+    def print_color(self, name, hex):
+        if name not in mood_ring_colors:
+            raise Exception('Unsupported color: ' + name)
+
+        if name in termcolor_colors:
+            if name == 'purple':
                 font_color = 'blue'  # Blue on termcolor is purple
             else:
-                font_color = color
-            print('Color changed: ' + colored(text=color, color=font_color))
+                font_color = name
+            print('Color changed: ' + colored(text=name + '(' + hex + ')', color=font_color))
         else:
-            print('Color changed: ' + color)
+            print('Color changed: ' + name + '(' + hex + ')')
 
 
 class BlinkstickColorChanger(ColorChanger):
-    def change(self, color):
-        super().print_color(color=color)
-        blinkstick.find_first().morph(hex=color, duration=500)
+    def change(self, name, hex):
+        super().print_color(name=name, hex=hex)
+        blinkstick.find_first().morph(hex=hex, duration=500)
+
+    def turn_off(self):
+        blinkstick.find_first().turn_off()
 
 
 class CommandLineColorChanger(ColorChanger):
-    def change(self, color):
-        super().print_color(color=color)
+    def change(self, name, hex):
+        super().print_color(name=name, hex=hex)
+
+    def turn_off(self):
+        pass
 
 
 color_changer = None
@@ -48,6 +58,8 @@ except:
 
 if __name__ == "__main__":
     # Test out the color changer
-    for c in mood_ring_colors.keys():
-        color_changer.change(color=c)
+    for color_name, color_hex in mood_ring_colors.items():
+        color_changer.change(name=color_name, hex=color_hex)
         time.sleep(3)  # seconds
+
+    color_changer.turn_off()
