@@ -1,3 +1,5 @@
+import time
+
 from abc import ABC, abstractmethod
 from termcolor import colored
 from blinkstick import blinkstick
@@ -26,7 +28,7 @@ class ColorChanger(ABC):
 class BlinkstickColorChanger(ColorChanger):
     def change(self, color):
         super().print_color(color=color)
-        blinkstick.find_first().set_color(hex=color)
+        blinkstick.find_first().morph(hex=color, duration=500)
 
 
 class CommandLineColorChanger(ColorChanger):
@@ -48,3 +50,4 @@ if __name__ == "__main__":
     # Test out the color changer
     for c in mood_ring_colors.keys():
         color_changer.change(color=c)
+        time.sleep(3)  # seconds

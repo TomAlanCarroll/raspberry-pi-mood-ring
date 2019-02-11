@@ -7,9 +7,9 @@ Copy config.properties.template to config.properties and replace AZURE_SUBSCRIPT
 ```bash
 virtualenv --no-site-packages venv
 source venv/bin/activate
-pip3 install blinkstick termcolor
+sudo pip3 install blinkstick termcolor
 source config.properties
 export AZURE_SUBSCRIPTION_KEY
 export REGION
-python3 mood_ring.py
+sudo python3 mood_ring.py
 ```

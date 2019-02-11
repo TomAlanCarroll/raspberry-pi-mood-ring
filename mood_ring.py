@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from colors import face_emotions_to_color
 from color_changer import color_changer
 from camera import camera
+from pprint import pprint
 
 
 # Replace the subscription_key string value with your valid subscription key.
@@ -36,14 +37,14 @@ with open(file_name, 'rb') as image_file:
     conn = http.client.HTTPSConnection(azure_api_base_uri)
     conn.request('POST', '/face/v1.0/detect?%s' % params, image_bytes, headers)
     response = conn.getresponse()
-    data = response.read()
+    data = response.read().decode('utf-8')
     parsed_response = json.loads(data)
 
     if not parsed_response:
         print('Picture could not be detected.')
     else:
         print('Response:')
-        print(json.dumps(parsed_response, sort_keys=True, indent=2))
+        pprint(parsed_response)
         color_changer.change(color=face_emotions_to_color({}))
     conn.close()
 i += 1
