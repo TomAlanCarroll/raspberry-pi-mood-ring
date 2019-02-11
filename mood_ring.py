@@ -1,9 +1,11 @@
 import os
+import http.client
+import json
+
+from urllib.parse import urlencode
 from colors import face_emotions_to_color
 from color_changer import color_changer
 from camera import camera
-
-import http.client, urllib, json
 
 
 # Replace the subscription_key string value with your valid subscription key.
@@ -20,7 +22,7 @@ headers = {
     'Ocp-Apim-Subscription-Key': subscription_key,
 }
 # Request parameters
-params = urllib.urlencode({
+params = urlencode({
     'returnFaceId': 'true',
     'returnFaceLandmarks': 'false',
     'returnFaceAttributes': 'age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,'

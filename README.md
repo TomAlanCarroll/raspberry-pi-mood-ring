@@ -9,5 +9,7 @@ virtualenv --no-site-packages venv
 source venv/bin/activate
 pip3 install blinkstick termcolor
 source config.properties
+export AZURE_SUBSCRIPTION_KEY
+export REGION
 python3 mood_ring.py
 ```
