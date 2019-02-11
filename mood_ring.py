@@ -1,13 +1,15 @@
 import os
 import http.client
 import json
+import time
 
 from urllib.parse import urlencode
-from colors import face_emotions_to_color
+from colors import face_emotions_to_color, mood_ring_colors
 from color_changer import color_changer
 from camera import camera
 from pprint import pprint
 
+UPDATE_INTERVAL = 8  # Update every 8 seconds
 
 # Replace the subscription_key string value with your valid subscription key.
 subscription_key = os.environ['AZURE_SUBSCRIPTION_KEY']
@@ -31,20 +33,27 @@ params = urlencode({
 })
 
 i = 1
-file_name = camera.capture(i)
-with open(file_name, 'rb') as image_file:
-    image_bytes = image_file.read()
-    conn = http.client.HTTPSConnection(azure_api_base_uri)
-    conn.request('POST', '/face/v1.0/detect?%s' % params, image_bytes, headers)
-    response = conn.getresponse()
-    data = response.read().decode('utf-8')
-    parsed_response = json.loads(data)
+while True:
+    file_name = camera.capture(i)
+    with open(file_name, 'rb') as image_file:
+        image_bytes = image_file.read()
+        conn = http.client.HTTPSConnection(azure_api_base_uri)
+        conn.request('POST', '/face/v1.0/detect?%s' % params, image_bytes, headers)
+        response = conn.getresponse()
+        data = response.read().decode('utf-8')
+        parsed_response = json.loads(data)
 
-    if not parsed_response:
-        print('Picture could not be detected.')
-    else:
-        print('Response:')
-        pprint(parsed_response)
-        color_changer.change(color=face_emotions_to_color({}))
-    conn.close()
-i += 1
+        if not parsed_response:
+            print('Picture could not be detected.')
+        else:
+            print('Response:')
+            pprint(parsed_response['faceAttributes']['emotion'])
+            emotions = parsed_response['faceAttributes']['emotion']
+            emotion_color_name = face_emotions_to_color(emotions)
+            if emotion_color_name is not None:
+                color_changer.change(name=emotion_color_name, hex=mood_ring_colors[emotion_color_name])
+            else:
+                color_changer.turn_off()
+        conn.close()
+    time.sleep(UPDATE_INTERVAL)
+    i += 1

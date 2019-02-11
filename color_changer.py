@@ -24,9 +24,9 @@ class ColorChanger(ABC):
                 font_color = 'blue'  # Blue on termcolor is purple
             else:
                 font_color = name
-            print('Color changed: ' + colored(text=name + '(' + hex + ')', color=font_color))
+            print('[INFO] Color changed: ' + colored(text=name + '(' + hex + ')', color=font_color))
         else:
-            print('Color changed: ' + name + '(' + hex + ')')
+            print('[INFO] Color changed: ' + name + '(' + hex + ')')
 
 
 class BlinkstickColorChanger(ColorChanger):
@@ -36,6 +36,7 @@ class BlinkstickColorChanger(ColorChanger):
 
     def turn_off(self):
         blinkstick.find_first().turn_off()
+        print('[INFO] Turned off blinkstick')
 
 
 class CommandLineColorChanger(ColorChanger):
